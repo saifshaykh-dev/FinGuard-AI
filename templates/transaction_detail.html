@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Transaction details · FinGuard AI{% endblock %}
+{% block page_name %}Transaction details{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow">INVESTIGATION / TRANSACTION DETAIL</div><h1>Transaction analysis</h1><p class="muted">{{ item.txn_ref }} · {{ item.timestamp }}</p></div><a class="btn btn-outline" href="{{ url_for('transactions') }}">← Back to transactions</a></div>
+<div class="detail-grid">
+  <div class="panel score-panel"><span class="muted">COMPOSITE RISK SCORE</span><div class="big-score {{ item.risk_level|lower }}">{{ item.risk_score }}<small>/100</small></div><span class="status {{ item.risk_level|lower }}">{{ item.risk_level }} risk</span><p class="muted tiny">A prioritisation score, not a probability of criminal activity.</p></div>
+  <div class="panel"><div class="panel-heading"><div><h2>Transaction information</h2><p>Recorded transaction attributes</p></div></div><div class="detail-list">
+    <div><span>Amount</span><strong>₹{{ "{:,.2f}".format(item.amount) }}</strong></div><div><span>Sender</span><strong>{{ item.sender }}</strong></div><div><span>Receiver</span><strong>{{ item.receiver }}</strong></div><div><span>Channel</span><strong>{{ item.channel }}</strong></div><div><span>Location</span><strong>{{ item.location }}</strong></div><div><span>Device marked new</span><strong>{{ "Yes" if item.device_new else "No" }}</strong></div>
+  </div></div>
+</div>
+<div class="panel explanation-panel"><div class="panel-heading"><div><h2>Why was this transaction flagged?</h2><p>Explainable indicators contributing to the review decision</p></div><span class="subtle-pill">EXPLAINABLE AI</span></div>
+<ul class="reason-list">{% for reason in item.reason_list %}<li><span class="reason-check">!</span>{{ reason }}</li>{% endfor %}</ul>
+<div class="model-breakdown"><div><span>ML classifier signal</span><b>{{ "Flagged" if item.model_flag else "Not flagged" }}</b></div><div><span>Anomaly detection</span><b>{{ "Unusual" if item.anomaly_flag else "Within learned range" }}</b></div><div><span>AML heuristic</span><b>{{ "Indicator found" if item.aml_flag else "No indicator" }}</b></div></div>
+</div>
+<div class="notice warning"><span class="notice-icon">ⓘ</span><div><strong>Analyst guidance</strong><p>Verify transaction context and customer history using authorised procedures. Do not treat an automated flag as a final finding.</p></div></div>
+{% endblock %}
