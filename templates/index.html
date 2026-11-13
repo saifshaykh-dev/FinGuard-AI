@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Overview · FinGuard AI{% endblock %}
+{% block page_name %}Overview{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow">FINANCIAL SECURITY / OVERVIEW</div><h1>Security overview</h1><p class="muted">Monitor transaction activity, detect anomalies, and review potential risks.</p></div><a class="btn btn-primary" href="{{ url_for('transactions') }}">View transactions <span>↗</span></a></div>
+<div class="notice"><span class="notice-icon">✦</span><div><strong>AI monitoring is active</strong><p>Transactions are analysed using a synthetic-data ML model, anomaly detection, and transparent risk indicators.</p></div><span class="notice-tag">LIVE DEMO</span></div>
+<div class="metrics-grid">
+  <div class="metric-card"><div class="metric-top"><span>Total transactions</span><span class="metric-icon blue">⇄</span></div><div class="metric-value">{{ "{:,}".format(total) }}</div><div class="metric-foot"><span class="positive">●</span> Transactions analysed</div></div>
+  <div class="metric-card"><div class="metric-top"><span>High-risk transactions</span><span class="metric-icon red">⚑</span></div><div class="metric-value">{{ high }}</div><div class="metric-foot"><span class="red-text">● Requires attention</span></div></div>
+  <div class="metric-card"><div class="metric-top"><span>Medium risk</span><span class="metric-icon amber">◈</span></div><div class="metric-value">{{ medium }}</div><div class="metric-foot">● Monitor closely</div></div>
+  <div class="metric-card"><div class="metric-top"><span>Average risk score</span><span class="metric-icon green">⌁</span></div><div class="metric-value">{{ avg }}<small>/100</small></div><div class="metric-foot">Across analysed transactions</div></div>
+</div>
+<div class="dashboard-grid">
+  <div class="panel chart-panel"><div class="panel-heading"><div><h2>Transaction activity</h2><p>Transaction volume over recent days</p></div><span class="subtle-pill">LAST 7 DAYS</span></div><div class="chart-wrap"><canvas id="activityChart"></canvas></div></div>
+  <div class="panel risk-panel"><div class="panel-heading"><div><h2>Risk distribution</h2><p>Breakdown by risk level</p></div></div><div class="donut-wrap"><canvas id="riskChart"></canvas><div class="donut-center"><strong>{{ total }}</strong><span>Transactions</span></div></div><div class="legend"><span><i class="dot low"></i>Low <b>{{ total-high-medium }}</b></span><span><i class="dot medium"></i>Medium <b>{{ medium }}</b></span><span><i class="dot high"></i>High <b>{{ high }}</b></span></div></div>
+</div>
+<div class="panel table-panel"><div class="panel-heading"><div><h2>Recent transactions</h2><p>Latest activity and AI-generated risk assessments</p></div><a class="text-link" href="{{ url_for('transactions') }}">View all transactions →</a></div>
+<div class="table-scroll"><table><thead><tr><th>TRANSACTION</th><th>SENDER → RECEIVER</th><th>AMOUNT</th><th>CHANNEL</th><th>RISK SCORE</th><th>STATUS</th></tr></thead><tbody>
+{% for r in recent %}<tr><td><a class="txn-link" href="{{ url_for('transaction_detail', txn_id=r.id) }}">{{ r.txn_ref }}</a><small>{{ r.timestamp }}</small></td><td>{{ r.sender }} <span class="arrow-muted">→</span> {{ r.receiver }}</td><td class="amount">₹{{ "{:,.2f}".format(r.amount) }}</td><td>{{ r.channel }}</td><td><span class="score {{ r.risk_level|lower }}">{{ r.risk_score }}</span></td><td><span class="status {{ r.risk_level|lower }}">{{ r.risk_level }} risk</span></td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}
+{% block scripts %}<script>
+const activity = {{ daily|safe }};
+const risk = {{ chart|safe }};
+makeActivityChart('activityChart', activity.labels, activity.values);
+makeRiskChart('riskChart', risk.labels, risk.values);
+</script>{% endblock %}
