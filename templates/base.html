@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}FinGuard AI{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">F</span><span>FinGuard<span class="brand-ai"> AI</span></span></a>
+    <div class="side-label">WORKSPACE</div>
+    <nav>
+      <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}"><span>▦</span> Overview</a>
+      <a class="nav-link {% if request.endpoint in ['transactions','transaction_detail'] %}active{% endif %}" href="{{ url_for('transactions') }}"><span>⇄</span> Transactions</a>
+      <a class="nav-link {% if request.endpoint == 'alerts' %}active{% endif %}" href="{{ url_for('alerts') }}"><span>♧</span> Risk alerts</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="secure-card"><div class="secure-icon">✦</div><strong>AI monitoring active</strong><p>Demo environment · Synthetic data</p><span class="live-dot"></span> SYSTEM ONLINE</div>
+      <div class="profile"><div class="avatar">FG</div><div><strong>Security Analyst</strong><small>Demo workspace</small></div><span class="profile-dots">···</span></div>
+    </div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div><span class="breadcrumb">Workspace</span><span class="crumb-sep">/</span><strong>{% block page_name %}Overview{% endblock %}</strong></div><div class="top-actions"><span class="environment"><i></i> DEMO ENVIRONMENT</span><div class="top-avatar">FG</div></div></header>
+    <section class="content">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}{% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+      <footer>FinGuard AI <span>·</span> Hackathon prototype · Synthetic data only</footer>
+    </section>
+  </main>
+</div>
+<script src="/static/app.js"></script>
+{% block scripts %}{% endblock %}
+</body></html>
