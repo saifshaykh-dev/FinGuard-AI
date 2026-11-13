@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Transactions · FinGuard AI{% endblock %}
+{% block page_name %}Transactions{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow">MONITORING / TRANSACTIONS</div><h1>Transactions</h1><p class="muted">Review analysed transactions and investigate risk indicators.</p></div><a class="btn btn-outline" href="{{ url_for('export') }}">↓ Export CSV</a></div>
+<div class="panel simulate-panel"><div class="panel-heading"><div><h2>Run a transaction analysis</h2><p>Submit a synthetic transaction to see the AI risk assessment.</p></div><span class="subtle-pill">SIMULATOR</span></div>
+<form action="{{ url_for('simulate') }}" method="post" class="simulate-form">
+  <label>Amount (₹)<input name="amount" type="number" min="1" step="0.01" value="125000" required></label>
+  <label>Sender account<input name="sender" value="ACCT-0099" required></label>
+  <label>Receiver account<input name="receiver" value="ACCT-0021" required></label>
+  <label>Channel<select name="channel"><option>UPI</option><option>Mobile Wallet</option><option>Net Banking</option><option>Card</option></select></label>
+  <label>Location<select name="location"><option>India</option><option>Singapore</option><option>UAE</option><option>United Kingdom</option></select></label>
+  <label>New device?<select name="device_new"><option value="0">No</option><option value="1">Yes</option></select></label>
+  <label>Failed attempts<input name="failed_attempts" type="number" min="0" max="20" value="0"></label>
+  <label>Transactions in last hour<input name="txn_count_1h" type="number" min="1" max="100" value="1"></label>
+  <label>Typical amount (₹)<input name="typical_amount" type="number" min="1" value="5000"></label>
+  <button class="btn btn-primary form-submit" type="submit">Analyse transaction ↗</button>
+</form></div>
+<div class="panel table-panel"><div class="panel-heading"><div><h2>All transactions <span class="count-pill">{{ rows|length }}</span></h2><p>Search, filter, and open a transaction for its explanation.</p></div></div>
+<form class="filters" method="get"><input name="q" value="{{ q }}" placeholder="Search reference, account or channel..."><select name="level"><option {% if level=='All' %}selected{% endif %}>All</option><option {% if level=='Low' %}selected{% endif %}>Low</option><option {% if level=='Medium' %}selected{% endif %}>Medium</option><option {% if level=='High' %}selected{% endif %}>High</option></select><button class="btn btn-outline" type="submit">Apply filters</button></form>
+<div class="table-scroll"><table><thead><tr><th>TRANSACTION</th><th>SENDER → RECEIVER</th><th>AMOUNT</th><th>CHANNEL</th><th>RISK SCORE</th><th>RISK LEVEL</th></tr></thead><tbody>
+{% for r in rows %}<tr><td><a class="txn-link" href="{{ url_for('transaction_detail', txn_id=r.id) }}">{{ r.txn_ref }}</a><small>{{ r.timestamp }}</small></td><td>{{ r.sender }} <span class="arrow-muted">→</span> {{ r.receiver }}</td><td class="amount">₹{{ "{:,.2f}".format(r.amount) }}</td><td>{{ r.channel }}</td><td><span class="score {{ r.risk_level|lower }}">{{ r.risk_score }}</span></td><td><span class="status {{ r.risk_level|lower }}">{{ r.risk_level }}</span></td></tr>{% else %}<tr><td colspan="6" class="empty">No matching transactions.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}
