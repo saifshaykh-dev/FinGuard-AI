@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Risk alerts · FinGuard AI{% endblock %}
+{% block page_name %}Risk alerts{% endblock %}
+{% block content %}
+<div class="page-heading"><div><div class="eyebrow">MONITORING / ALERT CENTRE</div><h1>Risk alerts</h1><p class="muted">Transactions that may need additional investigation.</p></div><span class="subtle-pill">{{ rows|length }} ALERTS</span></div>
+<div class="notice warning"><span class="notice-icon">⚑</span><div><strong>Human review is required</strong><p>These are model-generated signals, not proof of fraud or money laundering. Review context before taking action.</p></div></div>
+<div class="panel table-panel"><div class="panel-heading"><div><h2>Flagged activity</h2><p>Medium/high risk transactions and AML indicators</p></div></div>
+<div class="table-scroll"><table><thead><tr><th>TRANSACTION</th><th>ACCOUNTS</th><th>AMOUNT</th><th>RISK</th><th>AML SIGNAL</th><th></th></tr></thead><tbody>
+{% for r in rows %}<tr><td><a class="txn-link" href="{{ url_for('transaction_detail', txn_id=r.id) }}">{{ r.txn_ref }}</a><small>{{ r.timestamp }}</small></td><td>{{ r.sender }} → {{ r.receiver }}</td><td class="amount">₹{{ "{:,.2f}".format(r.amount) }}</td><td><span class="score {{ r.risk_level|lower }}">{{ r.risk_score }}</span></td><td>{% if r.aml_flag %}<span class="status high">AML indicator</span>{% else %}<span class="muted">—</span>{% endif %}</td><td><a class="text-link" href="{{ url_for('transaction_detail', txn_id=r.id) }}">Investigate →</a></td></tr>{% else %}<tr><td colspan="6" class="empty">No alerts at the moment.</td></tr>{% endfor %}
+</tbody></table></div></div>
+{% endblock %}
